@@ -4,6 +4,8 @@ import theano.tensor as T
 rng = numpy.random
 
 def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None, bs=None):
+    # if Ws and bs are both not None, then we just unpack them into
+    # TensorSharedVariables
     if Ws is None or bs is None:
         print('initializing Ws & bs')
         if type(n_hidden_units) != list:
@@ -44,6 +46,14 @@ def get_parameters(n_in=None, n_hidden_units=2048, n_hidden_layers=None, Ws=None
 
 
 def get_model(Ws_s, bs_s, dropout=False):
+    """
+    :param Ws_s: weights
+    :param bs_s: biases
+    :param dropout: boolean or a list of values for whether or not to use
+    dropout at a given layer
+    :return: x_s, p_s. p_s is the final, scalar output of the neural net. Not
+    sure what x_s is at the moment.
+    """
     print('building expression graph')
     x_s = T.matrix('x')
 
@@ -63,6 +73,8 @@ def get_model(Ws_s, bs_s, dropout=False):
 
     last_layer = binary_layer
     n = len(Ws_s)
+
+    # neural network computation defined below.
     for l in range(n - 1):
         # h = T.tanh(T.dot(last_layer, Ws[l]) + bs[l])
         h = T.dot(last_layer, Ws_s[l]) + bs_s[l]

@@ -5,3 +5,6 @@ __pycache__/
 # python files
 *.pyc
 sunfish.py
+
+# auto-generated as result of simulating games
+stats.txt

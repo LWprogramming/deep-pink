@@ -1,5 +1,4 @@
 import load
-import pickle
 import theano
 import theano.tensor as T
 import math
@@ -21,15 +20,26 @@ except AttributeError:
     from string import maketrans
 
 def get_model_from_pickle(fn):
+    """
+    Loads and returns model from pickled file which stores weights and biases.
+    :param fn: filename
+    :return: the theano function object representing the model.
+    """
+
     f = open(fn, 'rb')
+
+    # load weights Ws and biases bs.
+    # Ws is a list of 3 nd arrays.
+    # 1st nd-array: 768 x 2048 (weights for input to first hidden layer)
+    # 2nd nd-array: 2048 x 2048
+    # 3rd nd-array: 2048-dimensional vector to provide single output value.
     Ws, bs = pickle.load(f, encoding='bytes')
-    
     Ws_s, bs_s = load.get_parameters(Ws=Ws, bs=bs)
     x, p = load.get_model(Ws_s, bs_s)
-    
-    predict = theano.function(
-        inputs=[x],
-        outputs=p)
+
+    # predict is a function object, computing outputs from inputs (based on
+    # the function defined in load.py's get_model function.
+    predict = theano.function(inputs=[x], outputs=p)
 
     return predict
 
@@ -212,6 +222,12 @@ class Sunfish(Player):
         return gn_new
 
 def game(func):
+    """
+    Simulate a single game.
+    :param func: model that deep pink is to use.
+    :return: The result (who won or if it was a draw), as well as the
+    time each player used.
+    """
     gn_current = chess.pgn.Game()
 
     maxd = random.randint(1, 2) # max depth for deep pink
@@ -219,11 +235,13 @@ def game(func):
 
     print('maxd %f secs %f' % (maxd, secs))
 
+    # choose players. Can choose between deep pink, sunfish, and human.
     player_a = Computer(func, maxd=maxd)
     player_b = Sunfish(secs=secs)
 
-    times = {'A': 0.0, 'B': 0.0}
-    
+    times = {'A': 0.0, 'B': 0.0} # amount of time used by each player
+
+    # main game loop
     while True:
         for side, player in [('A', player_a), ('B', player_b)]:
             t0 = time.time()
