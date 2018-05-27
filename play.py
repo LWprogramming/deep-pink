@@ -11,6 +11,7 @@ import sunfish
 import pickle
 import random
 import traceback
+import dp_constants as constants
 
 try:
     # for python3
@@ -55,8 +56,6 @@ def sf2array(pos, flip):
         m = numpy.fliplr(m.reshape(8, 8)).reshape(64)
     return m
 
-CHECKMATE_SCORE = 1e6
-
 def negamax(pos, depth, alpha, beta, color, func):
     moves = []
     X = []
@@ -75,7 +74,7 @@ def negamax(pos, depth, alpha, beta, color, func):
 
     for i, pos_child in enumerate(pos_children):
         if pos_child.board.find('K') == -1:
-            scores[i] = CHECKMATE_SCORE
+            scores[i] = constants.CHECKMATE_SCORE
 
     child_nodes = sorted(zip(scores, moves), reverse=True)
 
@@ -83,7 +82,7 @@ def negamax(pos, depth, alpha, beta, color, func):
     best_move = None
     
     for score, move in child_nodes:
-        if depth == 1 or score == CHECKMATE_SCORE:
+        if depth == 1 or score == constants.CHECKMATE_SCORE:
             value = score
         else:
             # print 'ok will recurse', sunfish.render(move[0]) + sunfish.render(move[1])
@@ -230,14 +229,11 @@ def game(func):
     """
     gn_current = chess.pgn.Game()
 
-    maxd = random.randint(1, 2) # max depth for deep pink
-    secs = random.random() # max seconds for sunfish
-
-    print('maxd %f secs %f' % (maxd, secs))
+    print('maxd %f secs %f' % (constants.max_depth, constants.secs))
 
     # choose players. Can choose between deep pink, sunfish, and human.
-    player_a = Computer(func, maxd=maxd)
-    player_b = Sunfish(secs=secs)
+    player_a = Computer(func, maxd=constants.max_depth)
+    player_b = Sunfish(secs=constants.secs)
 
     times = {'A': 0.0, 'B': 0.0} # amount of time used by each player
 
