@@ -266,7 +266,7 @@ def game(func):
             
 def play():
     func = get_model_from_pickle('model.pickle')
-    while True:
+    for i in range(constants.num_games):
         side, times = game(func)
         f = open('stats.txt', 'a')
         f.write('%s %f %f\n' % (side, times['A'], times['B']))
