@@ -233,7 +233,8 @@ def game(func):
 
     # choose players. Can choose between deep pink, sunfish, and human.
     player_a = Computer(func, maxd=constants.max_depth)
-    player_b = Sunfish(secs=constants.secs)
+    player_b = Human()
+    # player_b = Sunfish(secs=constants.secs)
 
     times = {'A': 0.0, 'B': 0.0} # amount of time used by each player
 
